@@ -1,0 +1,72 @@
+---
+// Layout.astro
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+interface Props {
+    titulo: string;
+}
+const { titulo }: Props = Astro.props;
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/Instagram_icon.ico" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{titulo}</title>
+    </head>
+    <body class="bg-black text-white p-0 m-0 min-h-screen flex justify-between">
+        <Header />
+
+        <main class="flex-1 overflow-y-auto w-full max-w-lg text-center">
+            <slot />
+        </main>
+        
+        <aside class="hidden lg:block w-80 p-6 h-screen overflow-y-auto">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
+                <div>
+                    <p class="font-semibold">iconardojose_lobo</p>
+                    <p class="text-gray-400 text-sm">Leonardo Lobo</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-semibold">Suggested for you</span>
+                    <button class="text-xs font-semibold">See All</button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-600"></div>
+                            <div>
+                                <p class="text-sm font-semibold">mate_blogs</p>
+                                <p class="text-xs text-gray-400">Followed by file1_usuario8</p>
+                            </div>
+                        </div>
+                        <button class="text-xs text-blue-400 font-semibold">Follow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 space-y-2">
+                <div class="flex flex-wrap gap-2">
+                    <span>About</span>
+                    <span>Help</span>
+                    <span>Press</span>
+                    <span>API</span>
+                    <span>Jobs</span>
+                    <span>Privacy</span>
+                    <span>Terms</span>
+                    <span>Locations</span>
+                    <span>Language</span>
+                    <span>Meta Verified</span>
+                </div>
+                <p>© 2025 INSTAGRAM PROGRAMMER</p>
+            </div>
+        </aside>
+    </body>
+</html>
