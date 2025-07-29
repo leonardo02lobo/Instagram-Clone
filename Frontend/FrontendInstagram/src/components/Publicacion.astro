@@ -1,0 +1,53 @@
+---
+import ComentariosIcon from "../assets/icons/ComentariosIcon.astro";
+import EnviarIcon from "../assets/icons/EnviarIcon.astro";
+import GuardarIcon from "../assets/icons/GuardarIcon.astro";
+import LikeIcon from "../assets/icons/LikeIcon.astro";
+import MasInfoPublicaciones from "../assets/icons/MasInfoPublicaciones.astro";
+---
+
+<div class="flex flex-col gap-2 p-6 border-b border-gray-600">
+    <div class="flex flex-col gap-2">
+        <section class="flex flex-row items-center gap-2 justify-between">
+            <div class="flex flex-row items-center gap-2">
+                <img
+                    src="./../../public/Assets/iconPrincipal.png"
+                    alt=""
+                    class="w-10 h-10 rounded-full"
+                />
+                <span>whoisroro</span>
+                <span>•57m</span>
+            </div>
+            <div>
+                <MasInfoPublicaciones />
+            </div>
+        </section>
+    </div>
+    <div>
+        <div>
+            <img
+                src="https://i.pinimg.com/236x/93/a5/f5/93a5f52445124a6b9240def840003a05.jpg"
+                alt=""
+                class="w-full h-auto rounded-lg"
+            />
+        </div>
+    </div>
+    <div class="flex flex-col items-center justify-start">
+        <div class="flex flex-row items-center gap-2 justify-between w-full">
+            <div class="flex flex-row items-center gap-2">
+                <LikeIcon />
+                <ComentariosIcon />
+                <EnviarIcon />
+            </div>
+            <div>
+                <GuardarIcon />
+            </div>
+        </div>
+        <div class="flex flex-row items-center gap-2 mt-2 w-full">
+            <span>31 Likes</span>
+        </div>
+        <div>
+            <!--Parte de los comentarios -->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,23 @@
+---
+import "../styles/global.css";
+interface Props {
+    titulo: string;
+}
+const { titulo }: Props = Astro.props;
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/Instagram_icon.ico" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{titulo}</title>
+    </head>
+    <body class="bg-black">
+        <main class="flex flex-row items-center justify-center m-0 h-screen gap-4">
+            <slot />
+        </main>
+        <script src="./../Script/CrearCuenta.ts"></script>
+    </body>
+</html>
