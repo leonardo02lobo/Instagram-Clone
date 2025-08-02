@@ -1,0 +1,27 @@
+---
+const { username } = Astro.params;
+
+import Layout from "../layout/Layout.astro";
+import { getUsers } from "../utils/userService";
+
+export async function getStaticPaths() {
+    const users = await getUsers();
+    const elements = users.data;
+    console.log(elements[0].username);
+    return elements.map((user: any) => ({
+        params: { username: user.username },
+    }));
+}
+---
+
+<Layout titulo="Instagram" />
+
+<script>
+    fetch("http://localhost:8080/api/perfil", {
+        method: "GET",
+        credentials: "include",
+    })
+        .then((res) => res.json())
+        .then((data) => console.log(data))
+        .catch((err) => console.error("Error:", err));
+</script>

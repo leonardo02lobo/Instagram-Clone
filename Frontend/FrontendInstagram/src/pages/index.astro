@@ -5,7 +5,8 @@ import Layout from "../layout/Layout.astro";
 ---
 
 <Layout titulo="Instagram">
-	<div class="flex flex-col w-full">
+	<main class="grid grid-cols-3 gap-4 w-full h-screen">
+        <div class="col-span-2 flex flex-col w-full px-28">
 		<section
 			class="flex flex-row items-center overflow-x-auto gap-4 p-5 w-full no-scrollbar"
 		>
@@ -33,6 +34,52 @@ import Layout from "../layout/Layout.astro";
 			<Publicacion/>
 		</section>
 	</div>
+	<aside class="col-span-1 hidden lg:block w-80 p-6 h-screen overflow-y-auto">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
+                <div>
+                    <p class="font-semibold">iconardojose_lobo</p>
+                    <p class="text-gray-400 text-sm">Leonardo Lobo</p>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-gray-400 font-semibold">Suggested for you</span>
+                    <button class="text-xs font-semibold">See All</button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gray-600"></div>
+                            <div>
+                                <p class="text-sm font-semibold">mate_blogs</p>
+                                <p class="text-xs text-gray-400">Followed by file1_usuario8</p>
+                            </div>
+                        </div>
+                        <button class="text-xs text-blue-400 font-semibold">Follow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-xs text-gray-400 space-y-2">
+                <div class="flex flex-wrap gap-2">
+                    <span>About</span>
+                    <span>Help</span>
+                    <span>Press</span>
+                    <span>API</span>
+                    <span>Jobs</span>
+                    <span>Privacy</span>
+                    <span>Terms</span>
+                    <span>Locations</span>
+                    <span>Language</span>
+                    <span>Meta Verified</span>
+                </div>
+                <p>© 2025 INSTAGRAM PROGRAMMER</p>
+            </div>
+        </aside>
+    </main>
 </Layout>
 <style>
 	.no-scrollbar::-webkit-scrollbar {

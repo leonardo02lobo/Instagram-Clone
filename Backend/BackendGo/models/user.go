@@ -1,11 +1,16 @@
 package models
 
+import (
+	"database/sql"
+	"time"
+)
+
 type User struct {
-	ID         int    "json:id"
-	Username   string "json:username"
-	Email      string "json:email"
-	Password   string "json:password"
-	ProfilePic string "json:profile_pic"
-	Bio        string "json:bio"
-	CreatedAt  string "json:created_at"
+	UserID       int            `json:"user_id" db:"user_id"`
+	Username     string         `json:"username" db:"username"`
+	Email        string         `json:"email" db:"email"`
+	PasswordHash string         `json:"PasswordHash" db:"password_hash"`
+	Bio          sql.NullString `json:"bio,omitempty" db:"bio"`
+	ProfilePic   sql.NullString `json:"profile_pic,omitempty" db:"profile_pic"`
+	CreatedAt    time.Time      `json:"created_at" db:"created_at"`
 }

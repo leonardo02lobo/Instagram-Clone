@@ -5,18 +5,9 @@ import Registros from "../layout/Registros.astro";
 <Registros titulo="Instagram">
     <i class="text-white">Instagram</i>
     <form class="flex flex-col items-center justify-center gap-4" id="loginForm">
-        <input type="text" placeholder="Username" class="p-2 rounded text-white" />
-        <input type="password" placeholder="Password" class="p-2 rounded text-white" />
+        <input type="text" id="Email" name="Email" placeholder="Email" class="p-2 rounded text-white" />
+        <input type="password" id="PasswordHash" name="PasswordHash" placeholder="Password" class="p-2 rounded text-white" />
         <button type="submit" class="bg-blue-700 text-white p-2 rounded">Login</button>
         <p class="text-white">Don't have an account? <a href="/CrearCuenta" class="text-blue-500">Sign up</a></p>
     </form>
 </Registros>
-<script>
-    const loginForm = document.getElementById('loginForm') as HTMLElement | null;
-    loginForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        console.log('Login form submitted');
-        window.location.href = '/';
-    });
-
-    </script>
