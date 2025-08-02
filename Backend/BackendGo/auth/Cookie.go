@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"instagram-clone/config"
 	"instagram-clone/models"
 	"net/http"
@@ -10,24 +11,28 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// Clave secreta para firmar los JWT (debería estar en variables de entorno)
 var jwtSecret = []byte(config.Config.JWTSecret)
 
-// Estructura para los claims del JWT
 type Claims struct {
-	UserID   int    `json:"user_id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	UserID     int            `json:"user_id"`
+	Username   string         `json:"username"`
+	Email      string         `json:"email"`
+	Bio        sql.NullString `json:"Bio"`
+	ProfilePic sql.NullString `json:"profile_pic"`
+	CreatedAt  time.Time      `json:"creadted_at"`
 	jwt.RegisteredClaims
 }
 
-func CreateAuthCookie(c *gin.Context, user models.User) (string, error) {
+func CreateAuthCookie(user models.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	claims := &Claims{
-		UserID:   user.UserID,
-		Username: user.Username,
-		Email:    user.Email,
+		UserID:     user.UserID,
+		Username:   user.Username,
+		Email:      user.Email,
+		Bio:        user.Bio,
+		ProfilePic: user.ProfilePic,
+		CreatedAt:  user.CreatedAt,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -42,10 +47,8 @@ func CreateAuthCookie(c *gin.Context, user models.User) (string, error) {
 	return tokenString, nil
 }
 
-// Middleware para validar el JWT en las cookies
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Obtener la cookie
 		cookie, err := c.Request.Cookie("auth_token")
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
@@ -54,7 +57,6 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Parsear el token JWT
 		tokenString := cookie.Value
 		claims := &Claims{}
 
@@ -69,7 +71,6 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Añadir los claims al contexto para uso posterior
 		c.Set("userID", claims.UserID)
 		c.Set("username", claims.Username)
 		c.Set("email", claims.Email)
@@ -78,39 +79,23 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-// Obtener datos del usuario desde el JWT
-func GetUserFromCookie(c *gin.Context) (*Claims, error) {
-	cookie, err := c.Request.Cookie("auth_token")
+func DecodeJWTFromBody(token string) (*Claims, error) {
+
+	if token == "" {
+		return nil, nil
+	}
+
+	parsedToken, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+
 	if err != nil {
 		return nil, err
 	}
 
-	tokenString := cookie.Value
-	claims := &Claims{}
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
-	})
-
-	if err != nil || !token.Valid {
+	if claims, ok := parsedToken.Claims.(*Claims); ok && parsedToken.Valid {
+		return claims, nil
+	} else {
 		return nil, err
 	}
-
-	return claims, nil
-}
-
-func Logout(c *gin.Context) {
-	// Crear cookie de expiración inmediata
-	cookie := &http.Cookie{
-		Name:     "auth_token",
-		Value:    "",
-		Expires:  time.Unix(0, 0),
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
-	}
-
-	http.SetCookie(c.Writer, cookie)
-	c.JSON(http.StatusOK, gin.H{"message": "Sesión cerrada correctamente"})
 }

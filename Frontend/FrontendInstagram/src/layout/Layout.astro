@@ -15,6 +15,11 @@ const { titulo }: Props = Astro.props;
         <meta name="viewport" content="width=device-width" />
         <meta name="generator" content={Astro.generator} />
         <title>{titulo}</title>
+        <script>
+            if (localStorage.getItem("user") == null) {
+                window.location.href = "/IniciarSesion";
+            }
+        </script>
     </head>
     <body class="bg-black text-white p-0 m-0 min-h-screen flex justify-between">
         <Header />

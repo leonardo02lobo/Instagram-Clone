@@ -98,7 +98,7 @@ func IniciarSesion(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
 		return
 	}
-	token, err2 := auth.CreateAuthCookie(c, storedUser)
+	token, err2 := auth.CreateAuthCookie(storedUser)
 	if err2 != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al crear sesión"})
 		return
@@ -167,14 +167,30 @@ func GetUsers(c *gin.Context) {
 	})
 }
 func PerfilUsuario(c *gin.Context) {
-	// Obtener datos desde el middleware (ya puestos en el contexto)
-	userID := c.GetInt("userID")
-	username := c.GetString("username")
-	email := c.GetString("email")
+	type PerfilInput struct {
+		JWTDecode string `json:"jwtDecode"`
+		Perfil    bool   `json:"perfil"`
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"user_id":  userID,
-		"username": username,
-		"email":    email,
-	})
+	var input PerfilInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Ahora puedes usar input.JWTDecode y input.Perfil
+	dataJWT, err := auth.DecodeJWTFromBody(input.JWTDecode)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if input.Perfil {
+		c.JSON(http.StatusOK, gin.H{
+			"nombrePerfil": dataJWT,
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"nombrePerfil": dataJWT.Username,
+		})
+	}
 }
