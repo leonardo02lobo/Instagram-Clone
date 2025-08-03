@@ -11,7 +11,6 @@ class="flex flex-row items-center justify-start gap-2 w-full hover:bg-gray-800 p
 
 <script type="module">
     window.addEventListener("DOMContentLoaded", async () => {
-        const perfil = document.getElementById("perfil");
         const imagen = document.getElementById("imagen")
         const jwt = localStorage.getItem("user");
         const result = await fetch("http://localhost:8080/api/perfil", {
@@ -25,6 +24,9 @@ class="flex flex-row items-center justify-start gap-2 w-full hover:bg-gray-800 p
             }),
         });
         const data = await result.json();
+        if(data.error){
+            localStorage.removeItem("user")
+        }
         if (data && data.nombrePerfil) {
             perfil.href = `${data.nombrePerfil}`;
             imagen.src = "/public/Assets/fotosinperfil.png"
