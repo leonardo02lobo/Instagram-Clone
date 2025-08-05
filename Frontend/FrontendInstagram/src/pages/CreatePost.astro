@@ -1,0 +1,43 @@
+---
+import CrearNuevoPost from "../assets/icons/CrearNuevoPost.astro";
+import Layout from "../layout/Layout.astro";
+---
+
+<Layout titulo="Crear Post">
+    <div
+        class="flex flex-col justify-start items-center absolute h-screen w-full"
+    >
+        <section class="w-full flex justify-end p-4">
+            <a href="" id="volver">X</a>
+        </section>
+        <section
+            class="relative m-auto flex flex-col items-center justify-center"
+        >
+            <div class="text-center bg-black">
+                <p>Crear nuevo Post</p>
+                <div
+                    class="bg-gray-600 p-10 text-center flex flex-col justify-center items-center gap-3 rounded-b-3xl"
+                >
+                    <CrearNuevoPost />
+                    <p>Arrastra una imagen o video aqui</p>
+                    <form id="uploadForm" class="flex flex-col gap-5">
+                        <input type="file" name="image" id="imageInput" />
+                        <label for="texto" class="flex flex-col gap-3">
+                            Digite un texto para la publicacion
+                            <input
+                                type="text"
+                                id="texto"
+                                placeholder="Escribe un texto para agregar a la historia"
+                                class="text-black"
+                            />
+                        </label>
+                        <button class="bg-blue-600 p-3 rounded-2xl"
+                            >Publicar</button
+                        >
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+</Layout>
+<script src="./../Script/SubirImagenes.ts"></script>
