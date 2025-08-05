@@ -194,3 +194,51 @@ func PerfilUsuario(c *gin.Context) {
 		})
 	}
 }
+
+type TokenRequest struct {
+	Token string `json:"token"`
+}
+
+func GetUserByName(c *gin.Context) {
+	var req TokenRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil || req.Token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token JWT es requerido en el body"})
+		return
+	}
+
+	dataJWT, err := auth.DecodeJWTFromBody(req.Token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+	query := `
+		SELECT 
+			user_id, 
+			username, 
+			email, 
+			bio, 
+			profile_pic, 
+			created_at 
+		FROM users 
+		WHERE username = $1
+	`
+	err = config.DB.QueryRow(query, dataJWT.Username).Scan(
+		&user.UserID,
+		&user.Username,
+		&user.Email,
+		&user.Bio,
+		&user.ProfilePic,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
+	})
+}

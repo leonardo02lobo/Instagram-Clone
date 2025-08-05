@@ -4,7 +4,6 @@ Registrar.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(Registrar);
     const data = Object.fromEntries(formData.entries());
-    console.log(data)
     const result = await fetch("http://localhost:8080/api/registrar", {
         method: "POST",
         headers: {

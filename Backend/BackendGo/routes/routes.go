@@ -13,5 +13,8 @@ func Rutas(r *gin.Engine) {
 		api.POST("/login", controllers.IniciarSesion)
 		api.GET("/ObtenerUsuario", controllers.GetUsers)
 		api.POST("/perfil", controllers.PerfilUsuario)
+		api.POST("/CrearPublicacion", controllers.CrearPublicacion)
+		api.POST("/ObtenerUsuarioPorNombre", controllers.GetUserByName)
+		api.GET("/ObtenerPublicaciones", controllers.ObtenerPublicaciones)
 	}
 }
