@@ -1,36 +1,63 @@
-<div
-class="flex flex-row items-center justify-start gap-2 w-full hover:bg-gray-800 p-2 rounded transition-all duration-500 cursor-pointer"
->
-<a href="" id="perfil" class="flex flex-row gap-2">
-        <span>
-            <img src="" alt="" id="imagen" class="rounded-full w-6"/>
-        </span>
-        <span class="text-white">Profile</span>
-    </a>
-    </div>
+<div class="flex flex-row items-center justify-start gap-2 w-full hover:bg-gray-800 p-2 rounded transition-all duration-500 cursor-pointer">
+  <a href="" id="perfil" class="flex flex-row gap-2">
+    <span>
+      <img src="" alt="Foto de perfil" id="imagen" class="rounded-full w-6 h-6 object-cover"/>
+    </span>
+    <span class="text-white">Profile</span>
+  </a>
+</div>
 
 <script type="module">
-    window.addEventListener("DOMContentLoaded", async () => {
-        const imagen = document.getElementById("imagen")
-        const jwt = localStorage.getItem("user");
-        const result = await fetch("http://localhost:8080/api/perfil", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                jwtDecode: jwt,
-                perfil: false,
-            }),
-        });
-        const data = await result.json();
-        if(data.error){
-            localStorage.removeItem("user")
-        }
-        if (data && data.nombrePerfil) {
-            perfil.href = `${data.nombrePerfil}`;
-            imagen.src = "/public/Assets/fotosinperfil.png"
+  window.addEventListener("DOMContentLoaded", async () => {
+    const imagen = document.getElementById("imagen");
+    const perfilLink = document.getElementById("perfil");
+    const jwt = localStorage.getItem("user");
+    
+    if (!jwt) {
+      window.location.href = "/login";
+      return;
+    }
 
+    try {
+      const result = await fetch("http://localhost:8080/api/ObtenerUsuarioPorNombre", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: jwt,
+        }),
+      });
+
+      const data = await result.json();
+      
+      if (data.error) {
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+        return;
+      }
+
+      // Manejo más robusto de la foto de perfil
+      let profilePicUrl = "/Assets/fotosinperfil.png"; // Ruta por defecto
+      
+      if (data.user && data.user.profile_pic) {
+        // Manejar tanto sql.NullString como string normal
+        const picValue = data.user.profile_pic.String || data.user.profile_pic;
+        if (picValue && picValue !== "") {
+          profilePicUrl = `http://localhost:3000${picValue}`;
         }
-    });
+      }
+
+      // Actualizar el DOM
+      imagen.src = profilePicUrl;
+      
+      if (data.user && data.user.username) {
+        perfilLink.href = `/${data.user.username}`;
+      }
+
+    } catch (error) {
+      console.error("Error al cargar datos del usuario:", error);
+      imagen.src = "/Assets/fotosinperfil.png";
+    }
+  });
 </script>

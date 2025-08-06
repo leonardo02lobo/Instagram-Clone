@@ -4,8 +4,6 @@ import Publicacion from "../components/Publicacion.astro";
 import Layout from "../layout/Layout.astro";
 import { ObtenerPublicaciones } from "../Script/Publicaciones";
 const { data: publicaciones, user: usuario } = await ObtenerPublicaciones();
-console.log("Publicaciones:", publicaciones);
-console.log("Usuario:", usuario);
 ---
 
 <Layout titulo="Instagram">
@@ -32,14 +30,14 @@ console.log("Usuario:", usuario);
             </section>
             <section>
                 {
-                    publicaciones.map((publicacion:any, index:any) => {
-
+                    publicaciones.map((publicacion: any, index: any) => {
                         return (
                             <Publicacion
+                                POSTID={publicacion.post_id}
                                 nombre={usuario[index].username}
                                 hora={new Date(publicacion.create_at)}
-                                imagen={publicacion.MediaUrl}
-                                
+                                imagen={publicacion.media_url}
+                                caption={publicacion.caption}
                             />
                         );
                     })

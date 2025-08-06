@@ -1,0 +1,133 @@
+---
+import Layout from "../layout/Layout.astro";
+import SearchIcon from "../assets/icons/SearchIcon.astro";
+import CloseIcon from "../assets/icons/CloseIcon.astro";
+---
+
+<Layout titulo="Buscar">
+    <div class="max-w-xl mx-auto px-4 py-3">
+        <div class="relative mb-6">
+            <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+                <SearchIcon />
+            </div>
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar"
+                class="block w-full pl-10 pr-12 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-600 focus:border-gray-600"
+            />
+            <button
+                id="clearSearch"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+                <CloseIcon />
+            </button>
+        </div>
+
+        <div id="searchResults" class="space-y-4 hidden">
+            <h3 class="text-white font-semibold px-2">Cuentas</h3>
+            <div class="bg-gray-900 rounded-lg divide-y divide-gray-800">
+                <!-- Los resultados se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <div id="searchHistory" class="space-y-4">
+            <h3 class="text-white font-semibold px-2">Recientes</h3>
+            <div class="bg-gray-900 rounded-lg divide-y divide-gray-800">
+                <p class="text-gray-400 p-4 text-center">
+                    No hay búsquedas recientes
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script is:inline>
+        document.addEventListener("DOMContentLoaded", () => {
+            const searchInput = document.getElementById("searchInput");
+            const clearSearch = document.getElementById("clearSearch");
+            const searchResults = document.getElementById("searchResults");
+            const searchHistory = document.getElementById("searchHistory");
+
+            searchInput.addEventListener("input", async (e) => {
+                const query = e.target.value.trim();
+
+                if (query.length > 0) {
+                    clearSearch.classList.remove("hidden");
+
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8080/api/search/users?q=${encodeURIComponent(query)}`,
+                        );
+                        const results = await response.json();
+
+                        displayResults(results.users);
+                    } catch (error) {
+                        console.error("Error en la búsqueda:", error);
+                    }
+                } else {
+                    clearSearch.classList.add("hidden");
+                    searchResults.classList.add("hidden");
+                    searchHistory.classList.remove("hidden");
+                }
+            });
+
+            clearSearch.addEventListener("click", () => {
+                searchInput.value = "";
+                clearSearch.classList.add("hidden");
+                searchResults.classList.add("hidden");
+                searchHistory.classList.remove("hidden");
+            });
+
+            function displayResults(users) {
+                console.log(users)
+                if (users.length === 0) {
+                    searchResults.innerHTML = `
+                        <h3 class="text-white font-semibold px-2">Cuentas</h3>
+                        <div class="bg-gray-900 rounded-lg">
+                            <p class="text-gray-400 p-4 text-center">No se encontraron resultados</p>
+                        </div>
+                    `;
+                } else {
+                    const resultsHTML = users
+                        .map(
+                            (user) => `
+                        <a href="/${user.username}" class="flex items-center p-3 hover:bg-gray-800 transition-colors">
+                            <img src="${`http://localhost:3000${user.profile_pic.String}` || "/public/Assets/fotosinperfil.png"}" 
+                                 alt="${user.username}" 
+                                 class="w-10 h-10 rounded-full object-cover mr-3">
+                            <div>
+                                <p class="text-white font-medium">${user.username}</p>
+                                <p class="text-gray-400 text-sm">${user.full_name || ""}</p>
+                            </div>
+                        </a>
+                    `,
+                        )
+                        .join("");
+
+                    searchResults.innerHTML = `
+                        <h3 class="text-white font-semibold px-2">Cuentas</h3>
+                        <div class="bg-gray-900 rounded-lg divide-y divide-gray-800">
+                            ${resultsHTML}
+                        </div>
+                    `;
+                }
+
+                searchResults.classList.remove("hidden");
+                searchHistory.classList.add("hidden");
+            }
+        });
+    </script>
+</Layout>
+
+<style>
+    /* Animación para los resultados */
+    .search-result {
+        transition: all 0.2s ease;
+    }
+
+    .search-result:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+</style>

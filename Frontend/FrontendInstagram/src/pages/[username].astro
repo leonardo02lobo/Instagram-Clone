@@ -5,8 +5,9 @@ import Etiquetado from "../assets/icons/Etiquetado.astro";
 import Guardar from "../assets/icons/Guardar.astro";
 import Publicaciones from "../assets/icons/Publicaciones.astro";
 import Reels from "../assets/icons/Reels.astro";
+import PublicacionPerfil from "../components/PublicacionPerfil.astro";
 import Layout from "../layout/Layout.astro";
-import { getUsers } from "../utils/userService";
+import { getUserByName, getUsers } from "../utils/userService";
 
 export async function getStaticPaths() {
     const users = await getUsers();
@@ -15,50 +16,121 @@ export async function getStaticPaths() {
         params: { username: user.username },
     }));
 }
+
+const result = await fetch(
+    "http://localhost:8080/api/ObtenerUsuarioPorNombreSinJWT",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            token: Astro.url.href.split("/")[3],
+        }),
+    },
+);
+
+const data = await result.json();
+
+const result2 = await fetch(
+    "http://localhost:8080/api/ObtenerPublicacionesPorNombre",
+    {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            user_id: data.user.user_id,
+        }),
+    },
+);
+
+const data2 = await result2.json();
 ---
 
 <Layout titulo="Instagram">
     <div class="flex flex-col w-full px-32">
         <section class="w-full flex flex-row justify-center gap-20 py-10">
-            <!-- Datos -->
             <div class="flex justify-center items-center">
-                <img src="/public/Assets/fotosinperfil.png" alt="" class="rounded-full w-32 border-4 border-gray-700 p-1">
+                <img
+                    src={data.user.profile_pic.String == ""
+                        ? "/public/Assets/fotosinperfil.png"
+                        : `http://localhost:3000${data.user.profile_pic.String}`}
+                    alt=""
+                    class="rounded-full w-32 h-32 border-4 border-gray-700 p-1"
+                />
             </div>
             <div class="flex flex-col justify-center items-start gap-5">
-                <p>Name</p>
+                <div class="flex flex-row gap-4 justify-center items-center">
+                    <span>{data.user.username}</span>
+                <p
+                    id="configuracion"
+                    class="flex flex-row gap-4"
+                    data-username={data.user.username}
+                >
+                    <a
+                        href="/ConfigurarPerfil"
+                        class="bg-gray-500 py-1 px-3 rounded-2xl"
+                        >Editar Perfil</a
+                    >
+                </p>
+                </div>
+
                 <p class="flex flex-row gap-7">
-                    <span>0 Post</span>
+                    <span>{data ? 0 : data2.data.length} Post</span>
                     <span>0 Followers</span>
                     <span>0 following</span>
                 </p>
-                <p>Nombre</p>
-                <p>Bio</p>
+                <p>{data.user.username}</p>
+                <p>
+                    {
+                        data.user.bio.String == ""
+                            ? "Agrega una biografia"
+                            : data.user.bio.String
+                    }
+                </p>
             </div>
         </section>
         <section class="flex flex-row gpa-4 justify-start items-center">
             <!-- Historias -->
-            <div class="w-20 rounded-full bg-gray-900 h-20 text-4xl text-center flex justify-center items-center border-4 border-gray-600 p-1">
+            <div
+                class="w-20 rounded-full bg-gray-900 h-20 text-4xl text-center flex justify-center items-center border-4 border-gray-600 p-1"
+            >
                 +
             </div>
         </section>
         <section class="flex flex-col p-9">
             <!-- Publicaciones -->
-             <div class="flex flex-row gap-44 justify-center items-center">
-                <Publicaciones/>
-                <Reels/>
-                <Guardar/>
-                <Etiquetado/>
-             </div>
+            <div class="flex flex-row gap-44 justify-center items-center">
+                <Publicaciones />
+                <Reels />
+                <Guardar />
+                <Etiquetado />
+            </div>
+            <div class="grid grid-cols-3 gap-1 max-w-4xl mx-auto">
+                {
+                    data
+                        ? ""
+                        : data2.data.map((publicacion: any) => (
+                              <PublicacionPerfil
+                                  POSTID={publicacion.post_id}
+                                  imagen={publicacion.media_url}
+                              />
+                          ))
+                }
+            </div>
         </section>
     </div>
-
 </Layout>
 <script>
-    fetch("http://localhost:8080/api/perfil", {
-        method: "GET",
-        credentials: "include",
-    })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((err) => console.error("Error:", err));
+    import { getUserByName } from "../utils/userService";
+    const configuracion = document.getElementById("configuracion");
+    const username = configuracion?.dataset.username;
+
+    const dataUser = await getUserByName(localStorage.getItem("user"));
+    if (dataUser.user.username != username) {
+        if (configuracion) {
+            configuracion.style.display = "none";
+        }
+    }
 </script>

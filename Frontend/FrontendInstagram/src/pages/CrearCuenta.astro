@@ -1,72 +1,85 @@
 ---
+import InstagramLogo from "../assets/icons/InstagramLogo.astro";
 import CrearNuevaCuenta from "../layout/CrearNuevaCuenta.astro";
 ---
 
 <CrearNuevaCuenta titulo="Crear Cuenta">
-    <div class="border-2 border-gray-300 rounded-lg p-4">
-        <h1 class="text-2xl font-bold mb-4">Crear Cuenta</h1>
+    <div class="max-w-md mx-auto mt-10 p-8 bg-black border border-gray-800 rounded-lg">
+        <div class="flex justify-center mb-2">
+            <InstagramLogo class="w-10" />
+        </div>
+
+        <h1 class="text-xl font-semibold text-center text-gray-100 mb-6">Regístrate para ver fotos y videos de tus amigos</h1>
+
+        <!-- Formulario de registro -->
         <form method="POST" id="Registrar" class="space-y-4">
-            <div class="mb-4">
-                <label
-                    for="email"
-                    class="block text-sm font-medium text-gray-700"
-                    >Numero de telefono o Correo Electronico</label
-                >
+            <div>
                 <input
                     type="text"
                     id="email"
                     name="email"
+                    placeholder="Número de teléfono o correo electrónico"
                     required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white"
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
                 />
             </div>
-            <div class="mb-4">
-                <label
-                    for="password"
-                    class="block text-sm font-medium text-gray-700"
-                    >Contraseña</label
-                >
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white"
-                />
-            </div>
-            <div class="mb-4">
-                <label
-                    for="created_at"
-                    class="block text-sm font-medium text-gray-700"
-                    >Nombre Completo</label
-                >
+
+            <div>
                 <input
                     type="text"
-                    id="created_at"
-                    name="created_at"
+                    id="full_name"
+                    name="full_name"
+                    placeholder="Nombre completo"
                     required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white"
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
                 />
             </div>
-            <div class="mb-4">
-                <label
-                    for="username"
-                    class="block text-sm font-medium text-gray-700"
-                    >Nombre de usuario</label
-                >
+
+            <div>
                 <input
                     type="text"
                     id="username"
                     name="username"
+                    placeholder="Nombre de usuario"
                     required
-                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-white"
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
                 />
             </div>
+
+            <div>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Contraseña"
+                    required
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+                />
+            </div>
+
+            <div class="text-xs text-gray-400 my-4">
+                <p>Al registrarte, aceptas nuestras <a href="#" class="text-blue-400">Condiciones</a>, la <a href="#" class="text-blue-400">Política de privacidad</a> y la <a href="#" class="text-blue-400">Política de cookies</a>.</p>
+            </div>
+
             <button
                 type="submit"
-                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-                >Inscribirse</button
+                class="w-full bg-blue-500 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-600 transition-colors"
             >
+                Registrarse
+            </button>
         </form>
+
+        <!-- Separador "O" -->
+        <div class="flex items-center my-6">
+            <div class="flex-grow border-t border-gray-700"></div>
+            <span class="mx-4 text-gray-400">O</span>
+            <div class="flex-grow border-t border-gray-700"></div>
+        </div>
+        <!-- Enlace a inicio de sesión -->
+        <div class="max-w-md mx-auto mt-4 p-6 bg-black border border-gray-800 rounded-lg text-center">
+            <p class="text-gray-300">
+                ¿Tienes una cuenta? <a href="/IniciarSesion" class="text-blue-500 font-medium">Inicia sesión</a>
+            </p>
+        </div>
     </div>
 </CrearNuevaCuenta>

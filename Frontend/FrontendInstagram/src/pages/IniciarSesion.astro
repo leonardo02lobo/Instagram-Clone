@@ -1,13 +1,65 @@
 ---
+import InstagramLogo from "../assets/icons/InstagramLogo.astro";
 import Registros from "../layout/Registros.astro";
 ---
 
 <Registros titulo="Instagram">
-    <i class="text-white">Instagram</i>
-    <form class="flex flex-col items-center justify-center gap-4" id="loginForm">
-        <input type="text" id="Email" name="Email" placeholder="Email" class="p-2 rounded text-white" />
-        <input type="password" id="PasswordHash" name="PasswordHash" placeholder="Password" class="p-2 rounded text-white" />
-        <button type="submit" class="bg-blue-700 text-white p-2 rounded">Login</button>
-        <p class="text-white">Don't have an account? <a href="/CrearCuenta" class="text-blue-500">Sign up</a></p>
-    </form>
+    <div
+        class="max-w-xs mx-auto mt-10 p-8 bg-black border border-gray-800 rounded-lg"
+    >
+        <!-- Logo de Instagram -->
+        <div class="flex justify-center mb-8">
+            <InstagramLogo class="w-32" />
+        </div>
+
+        <!-- Formulario de inicio de sesión -->
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <input
+                    type="text"
+                    id="Email"
+                    name="Email"
+                    placeholder="Teléfono, usuario o correo electrónico"
+                    required
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500 text-sm"
+                />
+            </div>
+
+            <div>
+                <input
+                    type="password"
+                    id="PasswordHash"
+                    name="PasswordHash"
+                    placeholder="Contraseña"
+                    required
+                    class="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-400 focus:outline-none focus:border-gray-500 text-sm"
+                />
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-blue-500 text-white py-1.5 px-4 rounded-md font-medium hover:bg-blue-600 transition-colors text-sm"
+            >
+                Iniciar sesión
+            </button>
+
+            <!-- Separador "O" -->
+            <div class="flex items-center my-4">
+                <div class="flex-grow border-t border-gray-700"></div>
+                <span class="mx-4 text-gray-400 text-xs font-semibold">O</span>
+                <div class="flex-grow border-t border-gray-700"></div>
+            </div>
+            <!-- Enlace a registro -->
+            <div
+                class="max-w-xs mx-auto mt-4 p-6 bg-black border border-gray-800 rounded-lg text-center"
+            >
+                <p class="text-gray-300 text-sm">
+                    ¿No tienes una cuenta? <a
+                        href="/CrearCuenta"
+                        class="text-blue-500 font-medium">Regístrate</a
+                    >
+                </p>
+            </div>
+        </form>
+    </div>
 </Registros>

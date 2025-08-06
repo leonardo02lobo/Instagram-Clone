@@ -37,7 +37,7 @@ volver?.addEventListener("click", (e) => {
 
 
 async function CrearPublicacion(data: any): Promise<void>{
-    const texto = document.getElementById("texto")
+    const texto = document.getElementById("texto") as HTMLInputElement
     const user = await getUserByName(localStorage.getItem("user"))
     const result = await fetch("http://localhost:8080/api/CrearPublicacion",{
         method: "POST",
@@ -46,7 +46,7 @@ async function CrearPublicacion(data: any): Promise<void>{
         },
         body: JSON.stringify({
             "user_id": user.user.user_id,
-            "caption": texto?.innerText,
+            "caption": texto?.value,
             "media_url": data.url,
             "media_type": "image"
         })

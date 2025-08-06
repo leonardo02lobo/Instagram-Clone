@@ -15,23 +15,25 @@ export function getUsers() {
     console.error('There was a problem with the fetch operation:', error);
   });
 }
-export function getUserByName(name: string | null) {
-  return fetch(`http://localhost:8080/api/ObtenerUsuarioPorNombre`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "token": name
-    })
-  })
-  .then(response => {
+export async function getUserByName(name: string | null): Promise<any> {
+  try {
+    const response = await fetch(`http://localhost:8080/api/ObtenerUsuarioPorNombre`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "token": name
+      })
+    });
+
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return response.json();
-  })
-  .catch(error => {
+    const data = await response.json()
+    return data;
+  } catch (error) {
     console.error('There was a problem with the fetch operation:', error);
-  });
+    throw error;
+  }
 }

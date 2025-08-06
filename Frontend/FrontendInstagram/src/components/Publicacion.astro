@@ -1,4 +1,27 @@
 ---
+async function ObtenerCantidadLikes(postId: string){
+    try {
+        const response = await fetch('http://localhost:8080/api/posts/likes/count', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                post_id: parseInt(postId) 
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error al obtener likes:", error);
+        return { likes_count: 0 ,action: ""}; 
+    }
+}
+
 import ComentariosIcon from "../assets/icons/ComentariosIcon.astro";
 import EnviarIcon from "../assets/icons/EnviarIcon.astro";
 import GuardarIcon from "../assets/icons/GuardarIcon.astro";
@@ -8,16 +31,22 @@ import MasInfoPublicaciones from "../assets/icons/MasInfoPublicaciones.astro";
 import { formatRelativeTime } from "../helpers/dateFormatter";
 
 interface Props {
+    POSTID: string;
     nombre: string;
     hora: Date;
     imagen: string;
+    caption: string;
 }
 
-const { nombre, hora, imagen } = Astro.props;
+const { POSTID,nombre, hora, imagen,caption } = Astro.props;
 const tiempoRelativo = formatRelativeTime(hora);
+
+
+const likesData = await ObtenerCantidadLikes(POSTID)
 ---
 
 <div class="flex flex-col gap-2 p-6 border-b border-gray-600">
+    <p class="hidden" id="ID">{POSTID}</p>
     <div class="flex flex-col gap-2">
         <section class="flex flex-row items-center gap-2 justify-between">
             <div class="flex flex-row items-center gap-2">
@@ -47,7 +76,9 @@ const tiempoRelativo = formatRelativeTime(hora);
     <div class="flex flex-col items-center justify-start">
         <div class="flex flex-row items-center gap-2 justify-between w-full">
             <div class="flex flex-row items-center gap-2">
-                <LikeIcon />
+                <button id="Like">
+                    <LikeIcon>
+                </button>
                 <ComentariosIcon />
                 <EnviarIcon />
             </div>
@@ -55,11 +86,13 @@ const tiempoRelativo = formatRelativeTime(hora);
                 <GuardarIcon />
             </div>
         </div>
-        <div class="flex flex-row items-center gap-2 mt-2 w-full">
-            <span>0 Likes</span>
+        <div class="flex flex-col items-start gap-2 mt-2 w-full">
+            <span>{likesData.likes_count} Likes</span>
+            <span>{nombre} {caption}</span>
         </div>
         <div>
             <!--Parte de los comentarios -->
         </div>
     </div>
 </div>
+<script src="./../Script/Like.ts"></script>

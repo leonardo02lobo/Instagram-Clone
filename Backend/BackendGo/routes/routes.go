@@ -15,6 +15,13 @@ func Rutas(r *gin.Engine) {
 		api.POST("/perfil", controllers.PerfilUsuario)
 		api.POST("/CrearPublicacion", controllers.CrearPublicacion)
 		api.POST("/ObtenerUsuarioPorNombre", controllers.GetUserByName)
+		api.POST("/ObtenerUsuarioPorNombreSinJWT", controllers.GetUserByNameSinJWT)
 		api.GET("/ObtenerPublicaciones", controllers.ObtenerPublicaciones)
+		api.POST("/ObtenerPublicacionesPorNombre", controllers.ObtenerPublicacionesPorUserID)
+		api.POST("/ActualizarPerfil", controllers.ActualizarPerfil)
+		api.POST("/like", controllers.DarLike)
+		api.POST("/posts/likes/count", controllers.GetLikesCount)
+		api.POST("/posts/check-like", controllers.CheckUserLike)
+		api.GET("/search/users", controllers.SearchUsers)
 	}
 }

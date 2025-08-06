@@ -10,15 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CrearPublicacion(c *gin.Context) {
-	type StructPost struct {
-		PostID    int    `json:"post_id"`
-		UserID    int    `json:"user_id"`
-		Caption   string `json:"caption"`
-		MediaURL  string `json:"media_url"`
-		MediaType string `json:"media_type"`
-	}
+type StructPost struct {
+	PostID    int    `json:"post_id"`
+	UserID    int    `json:"user_id"`
+	Caption   string `json:"caption"`
+	MediaURL  string `json:"media_url"`
+	MediaType string `json:"media_type"`
+}
 
+func CrearPublicacion(c *gin.Context) {
 	var data StructPost
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -121,5 +121,64 @@ func ObtenerPublicaciones(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": publicaciones,
 		"user": users,
+	})
+}
+
+func ObtenerPublicacionesPorUserID(c *gin.Context) {
+	type RequestBody struct {
+		UserID int `json:"user_id"`
+	}
+
+	var requestBody RequestBody
+
+	if err := c.ShouldBindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de usuario requerido"})
+		return
+	}
+
+	query := `SELECT * FROM posts WHERE user_id = $1 ORDER BY created_at DESC;`
+
+	rows, err := config.DB.Query(query, requestBody.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error al obtener publicaciones",
+			"details": err.Error(),
+		})
+		return
+	}
+	defer rows.Close()
+
+	var publicaciones []models.Posts
+
+	for rows.Next() {
+		var publicacion models.Posts
+		err := rows.Scan(
+			&publicacion.PostID,
+			&publicacion.UserId,
+			&publicacion.Caption,
+			&publicacion.MediaUrl,
+			&publicacion.MediaType,
+			&publicacion.CreatedAt,
+		)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error":   "Error al escanear publicación",
+				"details": err.Error(),
+			})
+			return
+		}
+		publicaciones = append(publicaciones, publicacion)
+	}
+
+	if err = rows.Err(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error después de leer resultados",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": publicaciones,
 	})
 }

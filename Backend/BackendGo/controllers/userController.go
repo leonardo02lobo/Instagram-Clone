@@ -6,6 +6,7 @@ import (
 	"instagram-clone/models"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -178,7 +179,6 @@ func PerfilUsuario(c *gin.Context) {
 		return
 	}
 
-	// Ahora puedes usar input.JWTDecode y input.Perfil
 	dataJWT, err := auth.DecodeJWTFromBody(input.JWTDecode)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -195,24 +195,16 @@ func PerfilUsuario(c *gin.Context) {
 	}
 }
 
-type TokenRequest struct {
-	Token string `json:"token"`
-}
-
 func GetUserByName(c *gin.Context) {
+	type TokenRequest struct {
+		Token string `json:"token"`
+	}
 	var req TokenRequest
 
 	if err := c.ShouldBindJSON(&req); err != nil || req.Token == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Token JWT es requerido en el body"})
 		return
 	}
-
-	dataJWT, err := auth.DecodeJWTFromBody(req.Token)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	var user models.User
 	query := `
 		SELECT 
@@ -225,6 +217,11 @@ func GetUserByName(c *gin.Context) {
 		FROM users 
 		WHERE username = $1
 	`
+	dataJWT, err := auth.DecodeJWTFromBody(req.Token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	err = config.DB.QueryRow(query, dataJWT.Username).Scan(
 		&user.UserID,
 		&user.Username,
@@ -241,4 +238,127 @@ func GetUserByName(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
+}
+func GetUserByNameSinJWT(c *gin.Context) {
+	type TokenRequest struct {
+		Token string `json:"token"`
+	}
+	var req TokenRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil || req.Token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token JWT es requerido en el body"})
+		return
+	}
+	var user models.User
+	query := `
+		SELECT 
+			user_id, 
+			username, 
+			email, 
+			bio, 
+			profile_pic, 
+			created_at 
+		FROM users 
+		WHERE username = $1
+	`
+
+	err := config.DB.QueryRow(query, req.Token).Scan(
+		&user.UserID,
+		&user.Username,
+		&user.Email,
+		&user.Bio,
+		&user.ProfilePic,
+		&user.CreatedAt,
+	)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"user": user,
+	})
+}
+
+func ActualizarPerfil(c *gin.Context) {
+	type UpdateRequest struct {
+		UserID     int    `json:"user_id"`
+		Bio        string `json:"bio"`
+		ProfilePic string `json:"profile_pic"`
+	}
+
+	var req UpdateRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error al obtener datos del body"})
+		return
+	}
+	query := `
+        UPDATE users 
+        SET bio = $1, profile_pic = $2
+        WHERE user_id = $3
+        RETURNING user_id, username, email, bio, profile_pic, created_at
+    `
+
+	var user models.User
+	err := config.DB.QueryRow(
+		query,
+		req.Bio,
+		req.ProfilePic,
+		req.UserID,
+	).Scan(
+		&user.UserID,
+		&user.Username,
+		&user.Email,
+		&user.Bio,
+		&user.ProfilePic,
+		&user.CreatedAt,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error al actualizar el perfil",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Perfil actualizado correctamente",
+		"user":    user,
+	})
+}
+
+func SearchUsers(c *gin.Context) {
+	query := c.Query("q")
+	if query == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Query parameter 'q' is required"})
+		return
+	}
+
+	searchQuery := "%" + strings.ToLower(query) + "%"
+
+	rows, err := config.DB.Query(`
+		SELECT user_id, username, profile_pic 
+		FROM users 
+		WHERE LOWER(username) LIKE $1
+		LIMIT 20
+	`, searchQuery)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		return
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.UserID, &user.Username, &user.ProfilePic); err != nil {
+			continue
+		}
+		users = append(users, user)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": users})
 }
